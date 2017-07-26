@@ -1,2 +1,2 @@
 # Popular-Movies-Stage-1
-the app sort and display movies
+Pls go insert your Api key in the gradle.properties file. 
