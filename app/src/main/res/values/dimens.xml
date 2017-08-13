@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="layout_margin_default">16dp</dimen>
+    <dimen name="layout_margin_medium">7dp</dimen>
+    <dimen name="layout_margin_medium_small">2dp</dimen>
+    <dimen name="layout_margin_small">4dp</dimen>
+    <dimen name="poster_width">120dp</dimen>
+    <dimen name="poster_height">150dp</dimen>
+    <dimen name="overview_width">350dp</dimen>
+    <dimen name="layout_margin_bottom">8dp</dimen>
+    <dimen name="star_size">23dp</dimen>
+
+
+    <dimen name="appbar_height">250dp</dimen>
+    <dimen name="appbar_width">@dimen/wrap_content</dimen>
+
+    <dimen name="panel_paddingTop">10dp</dimen>
+
+    <dimen name="bodyText_paddingLeft">9dp</dimen>
+
+    <dimen name="yeqr_view_text_size">23sp</dimen>
+    <dimen name="text_size_small_small">3sp</dimen>
+    <dimen name="vote_average_view_text_size">23sp</dimen>
+    <dimen name="title_view_text_size">40sp</dimen>
+    <dimen name="body_view_text_size">15sp</dimen>
+
+    <dimen name="view_padding_size_large">20dp</dimen>
+
+
+
+</resources>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#1d1c1c</color>
+    <color name="colorPrimaryDark">#262626</color>
+    <color name="colorAccent">#2563a4</color>
+    <color name="stroke_border_color">#363334</color>
+    <color name="detail_title_colorl">#ffff</color>
+    <color name="average_view_color">#ffff</color>
+    <color name="year_view_color">#ffff</color>
+    <color name="duskYellow">#7ab8fa</color>
+    <color name="lightGrey">#a3a2a2</color>
+    <color name="card_background">#333232</color>
+    <color name="main_panel_bg_clor">#232222</color>
+
+    <color name="primary">#3F51B5</color>
+    <color name="primary_dark">#303F9F</color>
+    <color name="accent">#FF4081</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+</resources>

@@ -1,0 +1,9 @@
+<resources>
+
+    <string name="app_name">Popular Movies</string>
+    <string name="action_popular">Most Popular</string>
+    <string name="action_top_rate">Highest Rated</string>
+    <string name="app_width">match_parent</string>
+    <string name="detail_toolbar_title">Movie Details</string>
+
+</resources>
