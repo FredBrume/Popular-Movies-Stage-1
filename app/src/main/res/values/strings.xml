@@ -5,5 +5,14 @@
     <string name="action_top_rate">Highest Rated</string>
     <string name="app_width">match_parent</string>
     <string name="detail_toolbar_title">Movie Details</string>
+    <string name="sort_key">sort_key</string>
+    <string name="prefernce_list_title">Sort</string>
+    <string name="popular_lbl">Popular</string>
+    <string name="top_rated_lbl">Top Rated</string>
+    <string name="favorite_lbl">Favorite</string>
+    <string name="settings_title">Settings</string>
+    <string name="popular_value" translatable="false">popular</string>
+    <string name="top_rated_value" translatable="false">top_rated</string>
+    <string name="favorite_value" translatable="false">favorite</string>
 
 </resources>

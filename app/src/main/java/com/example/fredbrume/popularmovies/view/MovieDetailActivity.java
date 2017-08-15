@@ -1,6 +1,7 @@
 package com.example.fredbrume.popularmovies.view;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -16,6 +17,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.graphics.Palette;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -26,10 +28,10 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.fredbrume.popularmovies.R;
-import com.example.fredbrume.popularmovies.adapter.ReviewAdapter;
-import com.example.fredbrume.popularmovies.adapter.TrailerAdapter;
-import com.example.fredbrume.popularmovies.loaders.ReviewAsyncLoader;
-import com.example.fredbrume.popularmovies.loaders.TrailerAsyncLoader;
+import com.example.fredbrume.popularmovies.util.adapter.ReviewAdapter;
+import com.example.fredbrume.popularmovies.util.adapter.TrailerAdapter;
+import com.example.fredbrume.popularmovies.util.loaders.ReviewAsyncLoader;
+import com.example.fredbrume.popularmovies.util.loaders.TrailerAsyncLoader;
 import com.example.fredbrume.popularmovies.model.MoviePoster;
 import com.example.fredbrume.popularmovies.model.MovieTrailer;
 import com.example.fredbrume.popularmovies.model.MoviewReview;
@@ -143,7 +145,6 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
 
         new TrailerAsyncLoader(this, loaderManager, bundle, getBaseContext());
 
-
     }
 
     private void loadReviews()
@@ -214,7 +215,6 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
                 Uri.parse((NetworkUtils.buildYoutubeVideolURL(mTrailerDetails.getTrailer_id()))));
 
         startActivity(intent);
-//    }
     }
 
     @Override
@@ -246,4 +246,5 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
 
         }
     }
+
 }

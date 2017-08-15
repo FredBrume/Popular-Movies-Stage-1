@@ -4,10 +4,11 @@ import com.example.fredbrume.popularmovies.model.MoviePoster;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.support.v7.app.ActionBar;
+import android.content.SharedPreferences;
+import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,29 +19,26 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.fredbrume.popularmovies.adapter.PosterAdapter;
+import com.example.fredbrume.popularmovies.util.adapter.PosterAdapter;
 import com.example.fredbrume.popularmovies.R;
-import com.example.fredbrume.popularmovies.util.MovieDBjsonUtils;
-import com.example.fredbrume.popularmovies.util.NetworkUtils;
+import com.example.fredbrume.popularmovies.util.loaders.PosterAsyncLoader;
 
-import org.json.JSONException;
-
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity implements PosterAdapter.MovietAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements PosterAsyncLoader.PosterTaskHandler,
+        PosterAdapter.MovietAdapterOnClickHandler, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private PosterAdapter mAdapter;
     private RecyclerView mPosterList;
-    private static String sortType = "popular";
     private ProgressBar mLoadingIndicator;
-
+    private LoaderManager loaderManager;
+    private String sort;
     private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -54,14 +52,23 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Mov
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
 
         mPosterList.setLayoutManager(layoutManager);
-
         mPosterList.setHasFixedSize(true);
-
         mAdapter = new PosterAdapter(this);
-
         mPosterList.setAdapter(mAdapter);
 
+        loadSortSharedPreferences();
         loadPosterData();
+
+    }
+
+
+    private void loadSortSharedPreferences() {
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        sort = sharedPreferences.getString(getString(R.string.sort_key), getString(R.string.popular_value));
+
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
 
@@ -69,8 +76,12 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Mov
 
         showPosterView();
 
-        URL sortUrl = NetworkUtils.buildSortUrl(sortType);
-        new FetchPosterTask().execute(sortUrl);
+        Bundle bundle = new Bundle();
+        bundle.putString(PosterAsyncLoader.POSTER_SORT, sort);
+
+        loaderManager = getSupportLoaderManager();
+
+        new PosterAsyncLoader(this, loaderManager, bundle, getBaseContext());
     }
 
     private void showPosterView() {
@@ -95,50 +106,17 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Mov
         startActivity(intentToStartDetailActivity);
     }
 
-    private class FetchPosterTask extends AsyncTask<URL, Void, ArrayList<MoviePoster>> {
+    @Override
+    public void postExecutePoster(ArrayList<MoviePoster> posterList) {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+
+        if (posterList != null) {
+            showPosterView();
+            mAdapter.setPosterData(posterList);
+        } else {
+            showErrorMessage();
         }
-
-        @Override
-        protected ArrayList<MoviePoster> doInBackground(URL... params) {
-
-            URL url = params[0];
-
-            ArrayList<MoviePoster> simpleJsonPosterData;
-
-            try {
-                String jsonPosterResponse = NetworkUtils.getResponseFromHttpUrl(url);
-
-                simpleJsonPosterData = MovieDBjsonUtils
-                        .getMovieDetailsArrayListFromJson(jsonPosterResponse);
-
-                return simpleJsonPosterData;
-
-            } catch (IOException | JSONException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-
-        @Override
-        protected void onPostExecute(ArrayList<MoviePoster> list) {
-
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-
-            if (list != null) {
-                showPosterView();
-                mAdapter.setPosterData(list);
-            } else {
-                showErrorMessage();
-            }
-        }
-
     }
 
     @Override
@@ -148,14 +126,8 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Mov
 
             case R.id.action_popular:
 
-                sortType = "popular";
-                loadPosterData();
-                break;
-
-            case R.id.action_top_rated:
-
-                sortType = "top_rated";
-                loadPosterData();
+                Intent intent = new Intent(this, SettingActivity.class);
+                startActivity(intent);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -168,5 +140,20 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Mov
         inflater.inflate(R.menu.settings, menu);
 
         return true;
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+        loadSortSharedPreferences();
+        loadPosterData();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 }

@@ -4,11 +4,6 @@
     android:layout_height="wrap_content">
 
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark">
-
         <android.support.constraint.ConstraintLayout
             android:id="@+id/ff"
             android:layout_width="match_parent"
@@ -18,14 +13,13 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_posters"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/panel_paddingTop" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
         </android.support.constraint.ConstraintLayout>
 
 
-    </RelativeLayout>
+
 
 
 </LinearLayout>

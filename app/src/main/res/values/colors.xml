@@ -10,6 +10,7 @@
     <color name="duskYellow">#7ab8fa</color>
     <color name="lightGrey">#a3a2a2</color>
     <color name="card_background">#333232</color>
+    <color name="divider_color">#878787</color>
     <color name="main_panel_bg_clor">#232222</color>
 
     <color name="primary">#3F51B5</color>
