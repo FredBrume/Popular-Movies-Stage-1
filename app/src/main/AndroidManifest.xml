@@ -25,6 +25,11 @@
         <activity
             android:name=".view.SettingActivity"
             android:parentActivityName=".view.MainActivity"></activity>
+
+        <provider
+            android:name="com.example.fredbrume.popularmovies.util.localDB.FavoriteContentProvider"
+            android:authorities="com.example.fredbrume.popularmovies"
+            android:exported="false"/>
     </application>
 
 </manifest>

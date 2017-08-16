@@ -1,11 +1,13 @@
 package com.example.fredbrume.popularmovies.view;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -23,9 +25,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.fredbrume.popularmovies.R;
 import com.example.fredbrume.popularmovies.util.adapter.ReviewAdapter;
@@ -36,9 +40,11 @@ import com.example.fredbrume.popularmovies.model.MoviePoster;
 import com.example.fredbrume.popularmovies.model.MovieTrailer;
 import com.example.fredbrume.popularmovies.model.MoviewReview;
 import com.example.fredbrume.popularmovies.util.NetworkUtils;
+import com.example.fredbrume.popularmovies.util.localDB.FavoriteContract;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 public class MovieDetailActivity extends AppCompatActivity implements TrailerAsyncLoader.TrailerTaskHandler, ReviewAsyncLoader.ReviewTaskHandler,
@@ -52,7 +58,11 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
     private ReviewAdapter reviewAdapter;
     private FloatingActionButton fab;
     private ImageView poster;
+    private TextView overview;
+    private TextView title;
+    private TextView year;
     private RatingBar rating;
+    private static String movie_id;
     private LoaderManager loaderManager;
     private RecyclerView recyclerViewReview;
 
@@ -76,13 +86,12 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
 
 
-
         Intent intent = getIntent();
         poster = (ImageView) findViewById(R.id.review_item_poster);
         bannerPoster = (ImageView) findViewById(R.id.posterView);
-        TextView title = (TextView) findViewById(R.id.movie_title);
-        TextView overview = (TextView) findViewById(R.id.overview);
-        TextView year = (TextView) findViewById(R.id.year);
+        title = (TextView) findViewById(R.id.movie_title);
+        overview = (TextView) findViewById(R.id.overview);
+        year = (TextView) findViewById(R.id.year);
         rating = (RatingBar) findViewById(R.id.rating);
         posterDetails = intent.getParcelableExtra(Intent.EXTRA_TEXT);
         RecyclerView recyclerViewTrailer = (RecyclerView) findViewById(R.id.rv_trailer);
@@ -90,13 +99,6 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
 
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Click action
-            }
-        });
-
 
         if (intent != null) {
 
@@ -107,6 +109,8 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
                 rating.setRating(Float.parseFloat(posterDetails.getMovie_rating()));
 
                 year.setText(String.valueOf(posterDetails.getMovie_year() + " " + "(Released)"));
+
+                movie_id=posterDetails.getMovie_id();
 
                 Picasso.with(this).load(NetworkUtils.buildPosterURL() + posterDetails.getBackdrop_path())
                         .into(bannerPoster);
@@ -135,6 +139,37 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
         recyclerViewReview.setAdapter(reviewAdapter);
     }
 
+    public void onClickAddFavorite(View view) {
+
+        Bitmap bitmapPoster = ((BitmapDrawable) poster.getDrawable()).getBitmap();
+        ByteArrayOutputStream baosPoster = new ByteArrayOutputStream();
+        bitmapPoster.compress(Bitmap.CompressFormat.JPEG, 100, baosPoster);
+        byte[] posterInByte = baosPoster.toByteArray();
+
+        Bitmap bitmapBackdrop = ((BitmapDrawable) bannerPoster.getDrawable()).getBitmap();
+        ByteArrayOutputStream baosBackdrop = new ByteArrayOutputStream();
+        bitmapBackdrop.compress(Bitmap.CompressFormat.JPEG, 100, baosBackdrop);
+        byte[] bitmapBackdropInByte = baosBackdrop.toByteArray();
+
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_BACKDROP, bitmapBackdropInByte);
+        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_POSTER, posterInByte);
+        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_TITLE, title.getText().toString());
+        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_SYPNOSIS, overview.getText().toString());
+        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_RATING, String.valueOf(rating.getRating()));
+        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_DATE, year.getText().toString());
+        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID, movie_id);
+
+
+        Uri uri = getContentResolver().insert(FavoriteContract.FavoriteEntry.CONTENT_URI, contentValues);
+
+        if (uri != null) {
+            Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
+        }
+
+    }
+
 
     private void loadTrailers() {
 
@@ -147,8 +182,7 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
 
     }
 
-    private void loadReviews()
-    {
+    private void loadReviews() {
         Bundle bundle = new Bundle();
         bundle.putString(POSTER_ID, posterDetails.getMovie_id());
 
@@ -240,8 +274,8 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
             recyclerViewReview.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
             recyclerViewReview.setAdapter(reviewAdapter);
 
-            ViewGroup.LayoutParams params=recyclerViewReview.getLayoutParams();
-            params.height= RecyclerView.LayoutParams.WRAP_CONTENT;
+            ViewGroup.LayoutParams params = recyclerViewReview.getLayoutParams();
+            params.height = RecyclerView.LayoutParams.WRAP_CONTENT;
             recyclerViewReview.setLayoutParams(params);
 
         }
