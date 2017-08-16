@@ -38,7 +38,7 @@
             android:layout_marginBottom="@dimen/layout_margin_bottom"
             android:layout_marginLeft="@dimen/layout_margin_small"
             android:layout_marginTop="@dimen/layout_margin_medium_small"
-            android:src="@mipmap/ic_favorite" />
+            android:src="@mipmap/ic_rating" />
 
         <TextView
             android:id="@+id/poster_rating"

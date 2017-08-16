@@ -1,8 +1,10 @@
 package com.example.fredbrume.popularmovies.view;
 
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -19,13 +21,11 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.graphics.Palette;
-import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -66,7 +66,14 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
     private LoaderManager loaderManager;
     private RecyclerView recyclerViewReview;
 
+    private static String INTENT_ACTION = "favorite_on_click";
+    private static String INTENT_KEY = "favorite";
+    private static String INTENT_KEY_VALUE = "Movie added to favorite";
+
     private static String POSTER_ID = "poster_id";
+
+    FavoriteBroadcastReceiver favoriteBroadcastReceiver;
+    IntentFilter intentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +117,7 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
 
                 year.setText(String.valueOf(posterDetails.getMovie_year() + " " + "(Released)"));
 
-                movie_id=posterDetails.getMovie_id();
+                movie_id = posterDetails.getMovie_id();
 
                 Picasso.with(this).load(NetworkUtils.buildPosterURL() + posterDetails.getBackdrop_path())
                         .into(bannerPoster);
@@ -137,6 +144,21 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
         reviewAdapter = new ReviewAdapter(this);
         recyclerViewReview.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerViewReview.setAdapter(reviewAdapter);
+
+        favoriteBroadcastReceiver = new FavoriteBroadcastReceiver();
+        intentFilter = new IntentFilter(INTENT_ACTION);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(favoriteBroadcastReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(favoriteBroadcastReceiver);
     }
 
     public void onClickAddFavorite(View view) {
@@ -167,6 +189,10 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
         if (uri != null) {
             Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
         }
+
+        Intent intent = new Intent(INTENT_ACTION);
+        intent.putExtra(INTENT_KEY, INTENT_KEY_VALUE);
+        sendBroadcast(intent);
 
     }
 
@@ -281,4 +307,15 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
         }
     }
 
+    private class FavoriteBroadcastReceiver extends BroadcastReceiver {
+
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Toast.makeText(context, intent.getStringExtra(INTENT_KEY), Toast.LENGTH_SHORT).show();
+            fab.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.accent)));
+
+        }
+    }
 }
