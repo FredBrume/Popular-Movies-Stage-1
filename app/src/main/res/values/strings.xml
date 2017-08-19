@@ -11,6 +11,7 @@
     <string name="top_rated_lbl">Top Rated</string>
     <string name="favorite_lbl">Favorite</string>
     <string name="settings_title">Settings</string>
+    <string name="read_more">Read More</string>
     <string name="popular_value" translatable="false">popular</string>
     <string name="top_rated_value" translatable="false">top_rated</string>
     <string name="favorite_value" translatable="false">favorite</string>

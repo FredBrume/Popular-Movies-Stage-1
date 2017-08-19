@@ -5,6 +5,7 @@ import com.example.fredbrume.popularmovies.model.MoviePoster;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,15 +20,17 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.fredbrume.popularmovies.util.adapter.FavoriteCursorAdapter;
 import com.example.fredbrume.popularmovies.util.adapter.PosterAdapter;
 import com.example.fredbrume.popularmovies.R;
+import com.example.fredbrume.popularmovies.util.loaders.FavoriteAsyncLoader;
 import com.example.fredbrume.popularmovies.util.loaders.PosterAsyncLoader;
 
 import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements PosterAsyncLoader.PosterTaskHandler,
-        PosterAdapter.MovietAdapterOnClickHandler, SharedPreferences.OnSharedPreferenceChangeListener {
+        PosterAdapter.MovietAdapterOnClickHandler, SharedPreferences.OnSharedPreferenceChangeListener, FavoriteAsyncLoader.FavoriteTaskHandler {
 
     private PosterAdapter mAdapter;
     private RecyclerView mPosterList;
@@ -35,6 +38,15 @@ public class MainActivity extends AppCompatActivity implements PosterAsyncLoader
     private LoaderManager loaderManager;
     private String sort;
     private Toolbar toolbar;
+    private FavoriteCursorAdapter cursorAdapter;
+    public static final String POP_OR_TOP_LOADER_ID = "pop_top_loader_id";
+    private static final int FAVORITE_LOADER_value = 66;
+    public static final String FAVORITE_LOADER_ID = "pop_top_loader_id";
+    private static final int POP_OR_TOP_LOADER_value = 44;
+
+    public final static String POSTER_SORT = "poster_sort";
+    private static final String sortFavorite = "favorite";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,25 +62,58 @@ public class MainActivity extends AppCompatActivity implements PosterAsyncLoader
 
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
+        getColumnSpanCount(layoutManager);
+
 
         mPosterList.setLayoutManager(layoutManager);
         mPosterList.setHasFixedSize(true);
-        mAdapter = new PosterAdapter(this);
-        mPosterList.setAdapter(mAdapter);
 
-        loadSortSharedPreferences();
+        getSortedObject();
+    }
+
+    private void getSortedObject() {
+
         loadPosterData();
 
+        switch (loadSortSharedPreferences()) {
+            case sortFavorite:
+
+                cursorAdapter = new FavoriteCursorAdapter(this);
+                mPosterList.setAdapter(cursorAdapter);
+
+                break;
+
+            default:
+                mAdapter = new PosterAdapter(this);
+                mPosterList.setAdapter(mAdapter);
+
+                break;
+        }
+    }
+
+    private void getColumnSpanCount(GridLayoutManager gridLayoutManager) {
+
+        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if ((position + 1) % 4 == 0)
+                    return 3;
+                else
+                    return 1;
+            }
+        });
     }
 
 
-    private void loadSortSharedPreferences() {
+    private String loadSortSharedPreferences() {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         sort = sharedPreferences.getString(getString(R.string.sort_key), getString(R.string.popular_value));
 
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
+        return sort;
     }
 
 
@@ -76,12 +121,23 @@ public class MainActivity extends AppCompatActivity implements PosterAsyncLoader
 
         showPosterView();
 
-        Bundle bundle = new Bundle();
-        bundle.putString(PosterAsyncLoader.POSTER_SORT, sort);
+        Bundle bundlePopularOrTopRated = new Bundle();
+        Bundle bundleFavorite = new Bundle();
+
+        bundlePopularOrTopRated.putString(POSTER_SORT, loadSortSharedPreferences());
+        bundlePopularOrTopRated.putInt(POP_OR_TOP_LOADER_ID, POP_OR_TOP_LOADER_value);
+
+        bundleFavorite.putInt(FAVORITE_LOADER_ID, FAVORITE_LOADER_value);
 
         loaderManager = getSupportLoaderManager();
 
-        new PosterAsyncLoader(this, loaderManager, bundle, getBaseContext());
+        if (sort.equals(sortFavorite)) {
+
+            new FavoriteAsyncLoader(this, loaderManager, bundleFavorite, getBaseContext());
+
+        } else {
+            new PosterAsyncLoader(this, loaderManager, bundlePopularOrTopRated, getBaseContext());
+        }
     }
 
     private void showPosterView() {
@@ -155,5 +211,13 @@ public class MainActivity extends AppCompatActivity implements PosterAsyncLoader
 
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onFavoriteFinishTask(Cursor cursor) {
+
+        if (cursor != null) {
+            cursorAdapter.swapCursor(cursor);
+        }
     }
 }

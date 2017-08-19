@@ -11,10 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.fredbrume.popularmovies.R;
-import com.example.fredbrume.popularmovies.util.NetworkUtils;
+import com.example.fredbrume.popularmovies.util.ForeignDB.NetworkUtils;
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -40,7 +38,9 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.PosterView
     public PosterViewHolder onCreateViewHolder(final ViewGroup viewGroup, int viewType) {
 
         context = viewGroup.getContext();
-        int layoutIdForListItem = R.layout.poster_list_item;
+
+
+        int layoutIdForListItem = (viewType == 2) ? R.layout.poster_list_item_small : R.layout.poster_list_item_large;
         LayoutInflater inflater = LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
 
@@ -54,10 +54,32 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.PosterView
 
         MoviePoster poster = (MoviePoster) mPosterData.get(position);
 
-        viewHolder.rating.setText(poster.getMovie_rating());
-        Picasso.with(context).load(NetworkUtils.buildPosterURL() + poster.getPoster_path())
-                .into(viewHolder.mImage);
+        switch (getItemViewType(position)) {
 
+            case 2:
+                viewHolder.rating.setText(poster.getMovie_rating() + "");
+                Picasso.with(context).load(NetworkUtils.buildPosterURL() + poster.getPoster_path())
+                        .into(viewHolder.sImage);
+                break;
+            case 1:
+
+                Picasso.with(context).load(NetworkUtils.buildPosterURL() + poster.getPoster_path())
+                        .into(viewHolder.lImage);
+
+                viewHolder.titleView.setText(poster.getMovieTitle());
+                viewHolder.overviewView.setText(poster.getMovie_overview());
+                break;
+        }
+
+
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if ((position + 1) % 4 == 0)
+            return 1;
+        else
+            return 2;
     }
 
     @Override
@@ -69,14 +91,20 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.PosterView
     public class PosterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
 
     {
-        public ImageView mImage;
+        public ImageView sImage, lImage;
         public TextView rating;
+        private TextView titleView, overviewView, readMoreView;
 
         public PosterViewHolder(View itemView) {
             super(itemView);
 
-            mImage = (ImageView) itemView.findViewById(R.id.tv_item_poster);
-            rating= (TextView) itemView.findViewById(R.id.poster_rating);
+            sImage = (ImageView) itemView.findViewById(R.id.tv_item_poster);
+            lImage = (ImageView) itemView.findViewById(R.id.image);
+            rating = (TextView) itemView.findViewById(R.id.poster_rating);
+            titleView = (TextView) itemView.findViewById(R.id.title);
+            overviewView = (TextView) itemView.findViewById(R.id.overview);
+            readMoreView = (TextView) itemView.findViewById(R.id.read_more);
+
             itemView.setOnClickListener(this);
         }
 

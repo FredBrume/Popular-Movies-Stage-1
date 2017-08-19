@@ -9,7 +9,7 @@ import android.widget.ImageView;
 
 import com.example.fredbrume.popularmovies.R;
 import com.example.fredbrume.popularmovies.model.MovieTrailer;
-import com.example.fredbrume.popularmovies.util.NetworkUtils;
+import com.example.fredbrume.popularmovies.util.ForeignDB.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

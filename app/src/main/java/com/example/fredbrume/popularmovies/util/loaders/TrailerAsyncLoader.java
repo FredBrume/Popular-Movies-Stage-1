@@ -7,8 +7,8 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 
 import com.example.fredbrume.popularmovies.model.MovieTrailer;
-import com.example.fredbrume.popularmovies.util.MovieDBjsonUtils;
-import com.example.fredbrume.popularmovies.util.NetworkUtils;
+import com.example.fredbrume.popularmovies.util.ForeignDB.MovieDBjsonUtils;
+import com.example.fredbrume.popularmovies.util.ForeignDB.NetworkUtils;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -73,6 +73,8 @@ public class TrailerAsyncLoader implements LoaderManager.LoaderCallbacks<ArrayLi
             @Override
             public void deliverResult(ArrayList<MovieTrailer> data) {
                 super.deliverResult(data);
+
+                trailers =data;
             }
 
             @Override

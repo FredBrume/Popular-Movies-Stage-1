@@ -7,9 +7,9 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 
 import com.example.fredbrume.popularmovies.model.MoviePoster;
-import com.example.fredbrume.popularmovies.model.MovieTrailer;
-import com.example.fredbrume.popularmovies.util.MovieDBjsonUtils;
-import com.example.fredbrume.popularmovies.util.NetworkUtils;
+import com.example.fredbrume.popularmovies.util.ForeignDB.MovieDBjsonUtils;
+import com.example.fredbrume.popularmovies.util.ForeignDB.NetworkUtils;
+import com.example.fredbrume.popularmovies.view.MainActivity;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -26,11 +26,8 @@ public class PosterAsyncLoader implements LoaderManager.LoaderCallbacks<ArrayLis
 
     private Context context;
 
-    private static final int LOADER_ID = 44;
-
     private LoaderManager mLoaderManager;
 
-    public final static String POSTER_SORT = "poster_sort";
 
 
     public PosterAsyncLoader(PosterTaskHandler posterTaskHandler, LoaderManager loadermanger, Bundle bundle, Context context) {
@@ -40,12 +37,12 @@ public class PosterAsyncLoader implements LoaderManager.LoaderCallbacks<ArrayLis
         this.bundle = bundle;
         this.context = context;
 
-        Loader<String> loader = mLoaderManager.getLoader(LOADER_ID);
+        Loader<String> loader = mLoaderManager.getLoader((Integer) bundle.get(MainActivity.POP_OR_TOP_LOADER_ID));
 
         if (loader == null) {
-            mLoaderManager.initLoader(LOADER_ID, bundle, this);
+            mLoaderManager.initLoader((Integer) bundle.get(MainActivity.POP_OR_TOP_LOADER_ID), bundle, this);
         } else {
-            mLoaderManager.restartLoader(LOADER_ID, bundle, this);
+            mLoaderManager.restartLoader((Integer) bundle.get(MainActivity.POP_OR_TOP_LOADER_ID), bundle, this);
         }
     }
 
@@ -74,12 +71,13 @@ public class PosterAsyncLoader implements LoaderManager.LoaderCallbacks<ArrayLis
             @Override
             public void deliverResult(ArrayList<MoviePoster> data) {
                 super.deliverResult(data);
+                poster =data;
             }
 
             @Override
             public ArrayList<MoviePoster> loadInBackground() {
 
-                String poster_sort = args.getString(POSTER_SORT);
+                String poster_sort = args.getString(MainActivity.POSTER_SORT);
 
                 URL posterRequestUrl = NetworkUtils.buildSortUrl(poster_sort);
 

@@ -7,8 +7,8 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 
 import com.example.fredbrume.popularmovies.model.MoviewReview;
-import com.example.fredbrume.popularmovies.util.MovieDBjsonUtils;
-import com.example.fredbrume.popularmovies.util.NetworkUtils;
+import com.example.fredbrume.popularmovies.util.ForeignDB.MovieDBjsonUtils;
+import com.example.fredbrume.popularmovies.util.ForeignDB.NetworkUtils;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class ReviewAsyncLoader implements LoaderManager.LoaderCallbacks<ArrayLis
 
         return new AsyncTaskLoader<ArrayList<MoviewReview>>(context) {
 
-            ArrayList<MoviewReview> trailers = null;
+            ArrayList<MoviewReview> reviews = null;
 
             @Override
             protected void onStartLoading() {
@@ -63,8 +63,8 @@ public class ReviewAsyncLoader implements LoaderManager.LoaderCallbacks<ArrayLis
                     return;
                 }
 
-                if (trailers != null) {
-                    deliverResult(trailers);
+                if (reviews != null) {
+                    deliverResult(reviews);
                 } else {
                     forceLoad();
                 }
@@ -73,6 +73,7 @@ public class ReviewAsyncLoader implements LoaderManager.LoaderCallbacks<ArrayLis
             @Override
             public void deliverResult(ArrayList<MoviewReview> data) {
                 super.deliverResult(data);
+                reviews =data;
             }
 
             @Override

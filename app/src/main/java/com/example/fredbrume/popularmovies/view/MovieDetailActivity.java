@@ -39,7 +39,7 @@ import com.example.fredbrume.popularmovies.util.loaders.TrailerAsyncLoader;
 import com.example.fredbrume.popularmovies.model.MoviePoster;
 import com.example.fredbrume.popularmovies.model.MovieTrailer;
 import com.example.fredbrume.popularmovies.model.MoviewReview;
-import com.example.fredbrume.popularmovies.util.NetworkUtils;
+import com.example.fredbrume.popularmovies.util.ForeignDB.NetworkUtils;
 import com.example.fredbrume.popularmovies.util.localDB.FavoriteContract;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -113,7 +113,9 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
 
                 title.setText(String.valueOf(posterDetails.getMovieTitle()));
                 overview.setText(String.valueOf(posterDetails.getMovie_overview()));
-                rating.setRating(Float.parseFloat(posterDetails.getMovie_rating()));
+
+                rating.setRating(Float.parseFloat(posterDetails.getMovie_rating())/2);
+
 
                 year.setText(String.valueOf(posterDetails.getMovie_year() + " " + "(Released)"));
 
@@ -314,7 +316,7 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
         public void onReceive(Context context, Intent intent) {
 
             Toast.makeText(context, intent.getStringExtra(INTENT_KEY), Toast.LENGTH_SHORT).show();
-            fab.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.accent)));
+            fab.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
 
         }
     }

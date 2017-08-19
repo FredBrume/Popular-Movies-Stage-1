@@ -26,58 +26,41 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.example.fredbrume.popularmovies.R;
 import com.example.fredbrume.popularmovies.util.localDB.FavoriteContract;
 
 
-/**
- * This FavoriteCursorAdapter creates and binds ViewHolders, that hold the description and priority of a task,
- * to a RecyclerView to efficiently display data.
- */
 public class FavoriteCursorAdapter extends RecyclerView.Adapter<FavoriteCursorAdapter.FavoriteViewHolder> {
 
-    // Class variables for the Cursor that holds task data and the Context
     private Cursor mCursor;
     private Context mContext;
 
 
-    /**
-     * Constructor for the FavoriteCursorAdapter that initializes the Context.
-     *
-     * @param mContext the current Context
-     */
     public FavoriteCursorAdapter(Context mContext) {
         this.mContext = mContext;
     }
 
-
-    /**
-     * Called when ViewHolders are created to fill a RecyclerView.
-     *
-     * @return A new TaskViewHolder that holds the view for each task
-     */
     @Override
     public FavoriteViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        // Inflate the task_layout to a view
-        View view = LayoutInflater.from(mContext)
-                .inflate(R.layout.poster_list_item, parent, false);
+        int layoutIdForListItem = (viewType == 2) ? R.layout.poster_list_item_small : R.layout.poster_list_item_large;
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        boolean shouldAttachToParentImmediately = false;
+
+        View view = inflater.inflate(layoutIdForListItem, parent, shouldAttachToParentImmediately);
 
         return new FavoriteViewHolder(view);
     }
 
-
-    /**
-     * Called by the RecyclerView to display data at a specified position in the Cursor.
-     *
-     * @param holder   The ViewHolder to bind Cursor data to
-     * @param position The position of the data in the Cursor
-     */
     @Override
     public void onBindViewHolder(FavoriteViewHolder holder, int position) {
 
         int moviePosterIndex = mCursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_POSTER);
         int movieRatingIndex = mCursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_RATING);
+        int movieTitleIndex = mCursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_TITLE);
+        int movieOverviewIndex = mCursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_SYPNOSIS);
 
 
         mCursor.moveToPosition(position);
@@ -85,11 +68,22 @@ public class FavoriteCursorAdapter extends RecyclerView.Adapter<FavoriteCursorAd
         final byte[] bytesPoster = mCursor.getBlob(moviePosterIndex);
 
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytesPoster, 0, bytesPoster.length);
-        holder.mImage.setImageBitmap(bitmap);
 
-        String rating = mCursor.getString(movieRatingIndex);
+        switch (getItemViewType(position)) {
 
-        holder.rating.setText(rating);
+            case 2:
+                holder.rating.setText(mCursor.getString(movieRatingIndex));
+                holder.sImage.setImageBitmap(bitmap);
+                break;
+
+            case 1:
+
+                holder.lImage.setImageBitmap(bitmap);
+
+                holder.titleView.setText(mCursor.getString(movieTitleIndex));
+                holder.overviewView.setText(mCursor.getString(movieOverviewIndex));
+                break;
+        }
 
     }
 
@@ -104,6 +98,7 @@ public class FavoriteCursorAdapter extends RecyclerView.Adapter<FavoriteCursorAd
 
     public Cursor swapCursor(Cursor c) {
 
+        Toast.makeText(mContext, "I GOT THE FUCK HERE", Toast.LENGTH_SHORT).show();
         if (mCursor == c) {
             return null;
         }
@@ -116,18 +111,31 @@ public class FavoriteCursorAdapter extends RecyclerView.Adapter<FavoriteCursorAd
         return temp;
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if ((position + 1) % 4 == 0)
+            return 1;
+        else
+            return 2;
+    }
+
     class FavoriteViewHolder extends RecyclerView.ViewHolder {
 
 
-        public ImageView mImage;
+        public ImageView sImage, lImage;
         public TextView rating;
+        private TextView titleView, overviewView, readMoreView;
 
 
         public FavoriteViewHolder(View itemView) {
             super(itemView);
 
-            mImage = (ImageView) itemView.findViewById(R.id.tv_item_poster);
+            sImage = (ImageView) itemView.findViewById(R.id.tv_item_poster);
+            lImage = (ImageView) itemView.findViewById(R.id.image);
             rating = (TextView) itemView.findViewById(R.id.poster_rating);
+            titleView = (TextView) itemView.findViewById(R.id.title);
+            overviewView = (TextView) itemView.findViewById(R.id.overview);
+            readMoreView = (TextView) itemView.findViewById(R.id.read_more);
         }
     }
 }

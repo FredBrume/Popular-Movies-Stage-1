@@ -1,4 +1,4 @@
-package com.example.fredbrume.popularmovies.util;
+package com.example.fredbrume.popularmovies.util.ForeignDB;
 
 import org.json.JSONArray;
 import org.json.JSONException;
