@@ -1,4 +1,4 @@
-package com.example.fredbrume.popularmovies.util.localDB;
+package com.example.fredbrume.popularmovies.util;
 
 import android.content.ContentProvider;
 import android.net.Uri;

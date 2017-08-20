@@ -1,4 +1,4 @@
-package com.example.fredbrume.popularmovies.util.loaders;
+package com.example.fredbrume.popularmovies.util;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -7,9 +7,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.fredbrume.popularmovies.util.localDB.FavoriteContract;
 import com.example.fredbrume.popularmovies.view.MainActivity;
 
 
@@ -52,7 +50,7 @@ public class FavoriteAsyncLoader implements LoaderManager.LoaderCallbacks<Cursor
             protected void onStartLoading() {
                 super.onStartLoading();
 
-                Toast.makeText(context, "I GOT THE FUCK HERE", Toast.LENGTH_SHORT).show();
+                favoriteTaskHandler.onFavoriteStartTask();
 
                 if (cursorPoster != null) {
                     deliverResult(cursorPoster);
@@ -100,5 +98,7 @@ public class FavoriteAsyncLoader implements LoaderManager.LoaderCallbacks<Cursor
     public interface FavoriteTaskHandler{
 
          void onFavoriteFinishTask(Cursor cursor);
+
+        void onFavoriteStartTask();
     }
 }

@@ -1,4 +1,4 @@
-package com.example.fredbrume.popularmovies.util.ForeignDB;
+package com.example.fredbrume.popularmovies.util;
 
 
 import android.net.Uri;

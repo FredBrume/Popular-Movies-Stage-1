@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package com.example.fredbrume.popularmovies.util.adapter;
+package com.example.fredbrume.popularmovies.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -26,25 +26,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.fredbrume.popularmovies.R;
-import com.example.fredbrume.popularmovies.util.localDB.FavoriteContract;
+import com.example.fredbrume.popularmovies.model.MoviePoster;
+import com.example.fredbrume.popularmovies.util.FavoriteContentProviderHelper;
+import com.example.fredbrume.popularmovies.util.FavoriteContract;
 
 
 public class FavoriteCursorAdapter extends RecyclerView.Adapter<FavoriteCursorAdapter.FavoriteViewHolder> {
 
     private Cursor mCursor;
     private Context mContext;
+    private FavoritePosterOnClickHandler favoritePosterOnClickHandler;
 
 
-    public FavoriteCursorAdapter(Context mContext) {
-        this.mContext = mContext;
+    public FavoriteCursorAdapter(FavoritePosterOnClickHandler favoritePosterOnClickHandler) {
+
+        this.favoritePosterOnClickHandler = favoritePosterOnClickHandler;
     }
 
     @Override
     public FavoriteViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
+        mContext=parent.getContext();
         int layoutIdForListItem = (viewType == 2) ? R.layout.poster_list_item_small : R.layout.poster_list_item_large;
         LayoutInflater inflater = LayoutInflater.from(mContext);
         boolean shouldAttachToParentImmediately = false;
@@ -95,10 +99,8 @@ public class FavoriteCursorAdapter extends RecyclerView.Adapter<FavoriteCursorAd
         return mCursor.getCount();
     }
 
-
     public Cursor swapCursor(Cursor c) {
 
-        Toast.makeText(mContext, "I GOT THE FUCK HERE", Toast.LENGTH_SHORT).show();
         if (mCursor == c) {
             return null;
         }
@@ -119,7 +121,7 @@ public class FavoriteCursorAdapter extends RecyclerView.Adapter<FavoriteCursorAd
             return 2;
     }
 
-    class FavoriteViewHolder extends RecyclerView.ViewHolder {
+    class FavoriteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
 
         public ImageView sImage, lImage;
@@ -136,6 +138,25 @@ public class FavoriteCursorAdapter extends RecyclerView.Adapter<FavoriteCursorAd
             titleView = (TextView) itemView.findViewById(R.id.title);
             overviewView = (TextView) itemView.findViewById(R.id.overview);
             readMoreView = (TextView) itemView.findViewById(R.id.read_more);
+
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+
+            int position=getAdapterPosition();
+
+            MoviePoster poster=FavoriteContentProviderHelper.MoviePosterFromDB(mContext,position);
+
+            favoritePosterOnClickHandler.onClickFavoritePoster(poster);
+
+        }
+    }
+
+    public interface FavoritePosterOnClickHandler{
+
+        void onClickFavoritePoster(MoviePoster poster);
+
     }
 }

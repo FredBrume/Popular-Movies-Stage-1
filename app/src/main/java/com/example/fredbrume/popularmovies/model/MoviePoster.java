@@ -18,6 +18,24 @@ public class MoviePoster implements Parcelable {
     private String movie_id;
     private String poster_path;
     private String duration;
+    private byte[] backdropDBImg;
+    private byte[] posterDBImg;
+
+    public byte[] getBackdropDBImg() {
+        return backdropDBImg;
+    }
+
+    public void setBackdropDBImg(byte[] backdropDBImg) {
+        this.backdropDBImg = backdropDBImg;
+    }
+
+    public byte[] getPosterDBImg() {
+        return posterDBImg;
+    }
+
+    public void setPosterDBImg(byte[] posterDBImg) {
+        this.posterDBImg = posterDBImg;
+    }
 
     public String getMovieTitle() {
         return movieTitle;
@@ -91,6 +109,9 @@ public class MoviePoster implements Parcelable {
         this.duration = duration;
     }
 
+    public MoviePoster() {
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -107,9 +128,8 @@ public class MoviePoster implements Parcelable {
         dest.writeString(this.movie_id);
         dest.writeString(this.poster_path);
         dest.writeString(this.duration);
-    }
-
-    public MoviePoster() {
+        dest.writeByteArray(this.backdropDBImg);
+        dest.writeByteArray(this.posterDBImg);
     }
 
     protected MoviePoster(Parcel in) {
@@ -122,6 +142,8 @@ public class MoviePoster implements Parcelable {
         this.movie_id = in.readString();
         this.poster_path = in.readString();
         this.duration = in.readString();
+        this.backdropDBImg = in.createByteArray();
+        this.posterDBImg = in.createByteArray();
     }
 
     public static final Creator<MoviePoster> CREATOR = new Creator<MoviePoster>() {

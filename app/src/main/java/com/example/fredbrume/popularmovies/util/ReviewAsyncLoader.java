@@ -1,4 +1,4 @@
-package com.example.fredbrume.popularmovies.util.loaders;
+package com.example.fredbrume.popularmovies.util;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -6,9 +6,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 
-import com.example.fredbrume.popularmovies.model.MovieTrailer;
-import com.example.fredbrume.popularmovies.util.ForeignDB.MovieDBjsonUtils;
-import com.example.fredbrume.popularmovies.util.ForeignDB.NetworkUtils;
+import com.example.fredbrume.popularmovies.model.MoviewReview;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -17,24 +15,24 @@ import java.util.ArrayList;
  * Created by fredbrume on 8/11/17.
  */
 
-public class TrailerAsyncLoader implements LoaderManager.LoaderCallbacks<ArrayList<MovieTrailer>> {
+public class ReviewAsyncLoader implements LoaderManager.LoaderCallbacks<ArrayList<MoviewReview>> {
 
-    public TrailerTaskHandler trailerTaskHandler;
+    public ReviewTaskHandler reviewTaskHandler;
 
     private Bundle bundle;
 
     private Context context;
 
-    private static final int LOADER_ID = 22;
-
     private LoaderManager mLoaderManager;
+
+    private static final int LOADER_ID = 33;
 
     private final static String POSTER_ID = "poster_id";
 
 
-    public TrailerAsyncLoader(TrailerTaskHandler trailerTaskHandler,LoaderManager loadermanger, Bundle bundle, Context context) {
+    public ReviewAsyncLoader(ReviewTaskHandler trailerTaskHandler, LoaderManager loadermanger, Bundle bundle, Context context) {
 
-        this.trailerTaskHandler = trailerTaskHandler ;
+        this.reviewTaskHandler = trailerTaskHandler ;
         this.mLoaderManager = loadermanger;
         this.bundle = bundle;
         this.context = context;
@@ -51,9 +49,9 @@ public class TrailerAsyncLoader implements LoaderManager.LoaderCallbacks<ArrayLi
     @Override
     public Loader onCreateLoader(int id, final Bundle args) {
 
-        return new AsyncTaskLoader<ArrayList<MovieTrailer>>(context) {
+        return new AsyncTaskLoader<ArrayList<MoviewReview>>(context) {
 
-            ArrayList<MovieTrailer> trailers = null;
+            ArrayList<MoviewReview> reviews = null;
 
             @Override
             protected void onStartLoading() {
@@ -63,32 +61,31 @@ public class TrailerAsyncLoader implements LoaderManager.LoaderCallbacks<ArrayLi
                     return;
                 }
 
-                if (trailers != null) {
-                    deliverResult(trailers);
+                if (reviews != null) {
+                    deliverResult(reviews);
                 } else {
                     forceLoad();
                 }
             }
 
             @Override
-            public void deliverResult(ArrayList<MovieTrailer> data) {
+            public void deliverResult(ArrayList<MoviewReview> data) {
                 super.deliverResult(data);
-
-                trailers =data;
+                reviews =data;
             }
 
             @Override
-            public ArrayList<MovieTrailer> loadInBackground() {
+            public ArrayList<MoviewReview> loadInBackground() {
 
                 String poster_id = args.getString(POSTER_ID);
 
-                URL trailerRequestUrl = NetworkUtils.buildTrailerIDURL(poster_id);
+                URL trailerRequestUrl = NetworkUtils.buildReviewIDURL(poster_id);
 
                 try {
-                    String jsonTrailerResponse = NetworkUtils
+                    String jsonReviewResponse = NetworkUtils
                             .getResponseFromHttpUrl(trailerRequestUrl);
 
-                    ArrayList<MovieTrailer> simpleJsonTrailerData = MovieDBjsonUtils.getMovieTrailerArrayListFromJson(jsonTrailerResponse);
+                    ArrayList<MoviewReview> simpleJsonTrailerData = MovieDBjsonUtils.getMovieReviewArrayListFromJson(jsonReviewResponse);
 
                     return simpleJsonTrailerData;
 
@@ -103,9 +100,9 @@ public class TrailerAsyncLoader implements LoaderManager.LoaderCallbacks<ArrayLi
     }
 
     @Override
-    public void onLoadFinished(Loader<ArrayList<MovieTrailer>> loader, ArrayList<MovieTrailer> data) {
+    public void onLoadFinished(Loader<ArrayList<MoviewReview>> loader, ArrayList<MoviewReview> data) {
 
-        trailerTaskHandler.postExecuteTrailer(data);
+        reviewTaskHandler.postExecuteReview(data);
     }
 
     @Override
@@ -113,8 +110,8 @@ public class TrailerAsyncLoader implements LoaderManager.LoaderCallbacks<ArrayLi
 
     }
 
-    public interface TrailerTaskHandler {
+    public interface ReviewTaskHandler {
 
-        void postExecuteTrailer(ArrayList<MovieTrailer> trailers);
+        void postExecuteReview(ArrayList<MoviewReview> reviews);
     }
 }

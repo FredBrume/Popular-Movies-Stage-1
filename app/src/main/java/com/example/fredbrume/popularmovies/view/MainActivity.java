@@ -20,17 +20,18 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.fredbrume.popularmovies.util.adapter.FavoriteCursorAdapter;
-import com.example.fredbrume.popularmovies.util.adapter.PosterAdapter;
+import com.example.fredbrume.popularmovies.adapter.FavoriteCursorAdapter;
+import com.example.fredbrume.popularmovies.adapter.PosterAdapter;
 import com.example.fredbrume.popularmovies.R;
-import com.example.fredbrume.popularmovies.util.loaders.FavoriteAsyncLoader;
-import com.example.fredbrume.popularmovies.util.loaders.PosterAsyncLoader;
+import com.example.fredbrume.popularmovies.util.FavoriteAsyncLoader;
+import com.example.fredbrume.popularmovies.util.PosterAsyncLoader;
 
 import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements PosterAsyncLoader.PosterTaskHandler,
-        PosterAdapter.MovietAdapterOnClickHandler, SharedPreferences.OnSharedPreferenceChangeListener, FavoriteAsyncLoader.FavoriteTaskHandler {
+        PosterAdapter.MovietAdapterOnClickHandler, SharedPreferences.OnSharedPreferenceChangeListener,
+        FavoriteAsyncLoader.FavoriteTaskHandler,FavoriteCursorAdapter.FavoritePosterOnClickHandler {
 
     private PosterAdapter mAdapter;
     private RecyclerView mPosterList;
@@ -59,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements PosterAsyncLoader
 
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
         mPosterList = (RecyclerView) findViewById(R.id.rv_posters);
-
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
         getColumnSpanCount(layoutManager);
@@ -91,11 +91,17 @@ public class MainActivity extends AppCompatActivity implements PosterAsyncLoader
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
     private void getColumnSpanCount(GridLayoutManager gridLayoutManager) {
 
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
+
                 if ((position + 1) % 4 == 0)
                     return 3;
                 else
@@ -176,6 +182,12 @@ public class MainActivity extends AppCompatActivity implements PosterAsyncLoader
     }
 
     @Override
+    public void preExcecutePoster() {
+
+        mLoadingIndicator.setVisibility(View.VISIBLE);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
@@ -216,8 +228,26 @@ public class MainActivity extends AppCompatActivity implements PosterAsyncLoader
     @Override
     public void onFavoriteFinishTask(Cursor cursor) {
 
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
         if (cursor != null) {
             cursorAdapter.swapCursor(cursor);
         }
+    }
+
+    @Override
+    public void onFavoriteStartTask() {
+        mLoadingIndicator.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onClickFavoritePoster(MoviePoster poster) {
+
+        Context context = this;
+        Class destinationClass = FavoriteDetailActivity.class;
+
+        Intent intentToStartFavoriteDetailActivity = new Intent(context, destinationClass);
+
+        intentToStartFavoriteDetailActivity.putExtra(Intent.EXTRA_TEXT, poster);
+        startActivity(intentToStartFavoriteDetailActivity);
     }
 }

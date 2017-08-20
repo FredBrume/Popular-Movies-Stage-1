@@ -15,5 +15,7 @@
     <string name="popular_value" translatable="false">popular</string>
     <string name="top_rated_value" translatable="false">top_rated</string>
     <string name="favorite_value" translatable="false">favorite</string>
+    <string name="added_to_favorite">Added to favorite</string>
+    <string name="removed_from_favorite">Removed from favorite</string>
 
 </resources>

@@ -1,4 +1,4 @@
-package com.example.fredbrume.popularmovies.util.adapter;
+package com.example.fredbrume.popularmovies.adapter;
 
 import com.example.fredbrume.popularmovies.model.MoviePoster;
 
@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.fredbrume.popularmovies.R;
-import com.example.fredbrume.popularmovies.util.ForeignDB.NetworkUtils;
+import com.example.fredbrume.popularmovies.util.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -54,6 +54,8 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.PosterView
 
         MoviePoster poster = (MoviePoster) mPosterData.get(position);
 
+        System.out.println(getItemViewType(position));
+
         switch (getItemViewType(position)) {
 
             case 2:
@@ -76,7 +78,8 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.PosterView
 
     @Override
     public int getItemViewType(int position) {
-        if ((position + 1) % 4 == 0)
+
+        if ((position + 1) % 4 == 0) // remember Position returns 0 or 1 before computation
             return 1;
         else
             return 2;

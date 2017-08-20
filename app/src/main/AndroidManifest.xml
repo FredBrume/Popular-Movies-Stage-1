@@ -21,15 +21,17 @@
         </activity>
         <activity
             android:name=".view.MovieDetailActivity"
-            android:parentActivityName=".view.MainActivity"></activity>
+            android:parentActivityName=".view.MainActivity" />
         <activity
             android:name=".view.SettingActivity"
-            android:parentActivityName=".view.MainActivity"></activity>
+            android:parentActivityName=".view.MainActivity" />
 
         <provider
-            android:name="com.example.fredbrume.popularmovies.util.localDB.FavoriteContentProvider"
+            android:name=".util.FavoriteContentProvider"
             android:authorities="com.example.fredbrume.popularmovies"
-            android:exported="false"/>
+            android:exported="false" />
+
+        <activity android:name=".view.FavoriteDetailActivity"></activity>
     </application>
 
 </manifest>

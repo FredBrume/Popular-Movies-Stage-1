@@ -1,4 +1,4 @@
-package com.example.fredbrume.popularmovies.util.adapter;
+package com.example.fredbrume.popularmovies.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -9,7 +9,7 @@ import android.widget.ImageView;
 
 import com.example.fredbrume.popularmovies.R;
 import com.example.fredbrume.popularmovies.model.MovieTrailer;
-import com.example.fredbrume.popularmovies.util.ForeignDB.NetworkUtils;
+import com.example.fredbrume.popularmovies.util.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

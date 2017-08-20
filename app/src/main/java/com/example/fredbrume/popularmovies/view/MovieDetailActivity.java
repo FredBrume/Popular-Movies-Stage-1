@@ -1,10 +1,7 @@
 package com.example.fredbrume.popularmovies.view;
 
-import android.content.BroadcastReceiver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -16,7 +13,9 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,18 +28,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.fredbrume.popularmovies.R;
-import com.example.fredbrume.popularmovies.util.adapter.ReviewAdapter;
-import com.example.fredbrume.popularmovies.util.adapter.TrailerAdapter;
-import com.example.fredbrume.popularmovies.util.loaders.ReviewAsyncLoader;
-import com.example.fredbrume.popularmovies.util.loaders.TrailerAsyncLoader;
+import com.example.fredbrume.popularmovies.adapter.ReviewAdapter;
+import com.example.fredbrume.popularmovies.adapter.TrailerAdapter;
+import com.example.fredbrume.popularmovies.util.ReviewAsyncLoader;
+import com.example.fredbrume.popularmovies.util.TrailerAsyncLoader;
 import com.example.fredbrume.popularmovies.model.MoviePoster;
 import com.example.fredbrume.popularmovies.model.MovieTrailer;
 import com.example.fredbrume.popularmovies.model.MoviewReview;
-import com.example.fredbrume.popularmovies.util.ForeignDB.NetworkUtils;
-import com.example.fredbrume.popularmovies.util.localDB.FavoriteContract;
+import com.example.fredbrume.popularmovies.util.NetworkUtils;
+import com.example.fredbrume.popularmovies.util.FavoriteContentProviderHelper;
+import com.example.fredbrume.popularmovies.util.FavoriteContract;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -66,14 +65,7 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
     private LoaderManager loaderManager;
     private RecyclerView recyclerViewReview;
 
-    private static String INTENT_ACTION = "favorite_on_click";
-    private static String INTENT_KEY = "favorite";
-    private static String INTENT_KEY_VALUE = "Movie added to favorite";
-
     private static String POSTER_ID = "poster_id";
-
-    FavoriteBroadcastReceiver favoriteBroadcastReceiver;
-    IntentFilter intentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,24 +105,20 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
 
                 title.setText(String.valueOf(posterDetails.getMovieTitle()));
                 overview.setText(String.valueOf(posterDetails.getMovie_overview()));
-
                 rating.setRating(Float.parseFloat(posterDetails.getMovie_rating())/2);
-
-
                 year.setText(String.valueOf(posterDetails.getMovie_year() + " " + "(Released)"));
-
                 movie_id = posterDetails.getMovie_id();
 
                 Picasso.with(this).load(NetworkUtils.buildPosterURL() + posterDetails.getBackdrop_path())
                         .into(bannerPoster);
+
+                checkMovieFavoriteInDB();
 
                 loadTrailers();
 
                 loadReviews();
 
                 collapsingToolbarLayout.setTitle((posterDetails.getMovieTitle()));
-
-
             }
 
         }
@@ -146,58 +134,72 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
         reviewAdapter = new ReviewAdapter(this);
         recyclerViewReview.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerViewReview.setAdapter(reviewAdapter);
+    }
 
-        favoriteBroadcastReceiver = new FavoriteBroadcastReceiver();
-        intentFilter = new IntentFilter(INTENT_ACTION);
+    private void checkMovieFavoriteInDB()
+    {
+        if(FavoriteContentProviderHelper.checkForMovieFavorite(getBaseContext(),movie_id)){
+
+            fab.setImageDrawable(ContextCompat.getDrawable(this, R.mipmap.ic_favorite_like));
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(favoriteBroadcastReceiver, intentFilter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(favoriteBroadcastReceiver);
     }
 
     public void onClickAddFavorite(View view) {
 
-        Bitmap bitmapPoster = ((BitmapDrawable) poster.getDrawable()).getBitmap();
-        ByteArrayOutputStream baosPoster = new ByteArrayOutputStream();
-        bitmapPoster.compress(Bitmap.CompressFormat.JPEG, 100, baosPoster);
-        byte[] posterInByte = baosPoster.toByteArray();
 
-        Bitmap bitmapBackdrop = ((BitmapDrawable) bannerPoster.getDrawable()).getBitmap();
-        ByteArrayOutputStream baosBackdrop = new ByteArrayOutputStream();
-        bitmapBackdrop.compress(Bitmap.CompressFormat.JPEG, 100, baosBackdrop);
-        byte[] bitmapBackdropInByte = baosBackdrop.toByteArray();
+        if(FavoriteContentProviderHelper.checkForMovieFavorite(getBaseContext(),movie_id))
+        {
+            getContentResolver().delete(FavoriteContract.FavoriteEntry.CONTENT_URI,"id=?",new String[]{movie_id.toString()});
 
-        ContentValues contentValues = new ContentValues();
+                fab.setImageDrawable(ContextCompat.getDrawable(this, R.mipmap.ic_favorite_border));
 
-        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_BACKDROP, bitmapBackdropInByte);
-        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_POSTER, posterInByte);
-        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_TITLE, title.getText().toString());
-        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_SYPNOSIS, overview.getText().toString());
-        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_RATING, String.valueOf(rating.getRating()));
-        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_DATE, year.getText().toString());
-        contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID, movie_id);
+                Snackbar.make(view, getResources().getString(R.string.removed_from_favorite), Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
 
 
-        Uri uri = getContentResolver().insert(FavoriteContract.FavoriteEntry.CONTENT_URI, contentValues);
+        }else {
 
-        if (uri != null) {
-            Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
+            Bitmap bitmapPoster = ((BitmapDrawable) poster.getDrawable()).getBitmap();
+            ByteArrayOutputStream baosPoster = new ByteArrayOutputStream();
+            bitmapPoster.compress(Bitmap.CompressFormat.JPEG, 100, baosPoster);
+            byte[] posterInByte = baosPoster.toByteArray();
+
+            Bitmap bitmapBackdrop = ((BitmapDrawable) bannerPoster.getDrawable()).getBitmap();
+            ByteArrayOutputStream baosBackdrop = new ByteArrayOutputStream();
+            bitmapBackdrop.compress(Bitmap.CompressFormat.JPEG, 100, baosBackdrop);
+            byte[] bitmapBackdropInByte = baosBackdrop.toByteArray();
+
+            ContentValues contentValues = new ContentValues();
+
+            contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_BACKDROP, bitmapBackdropInByte);
+            contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_POSTER, posterInByte);
+            contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_TITLE, title.getText().toString());
+            contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_SYPNOSIS, overview.getText().toString());
+            contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_RATING, String.valueOf(rating.getRating()));
+            contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_DATE, year.getText().toString());
+            contentValues.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID, movie_id);
+
+
+            Uri uri = getContentResolver().insert(FavoriteContract.FavoriteEntry.CONTENT_URI, contentValues);
+
+            if (uri != null) {
+                fab.setImageDrawable(ContextCompat.getDrawable(this, R.mipmap.ic_favorite_like));
+                Snackbar.make(view, getResources().getString(R.string.added_to_favorite), Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
         }
 
-        Intent intent = new Intent(INTENT_ACTION);
-        intent.putExtra(INTENT_KEY, INTENT_KEY_VALUE);
-        sendBroadcast(intent);
-
     }
-
 
     private void loadTrailers() {
 
@@ -305,18 +307,6 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAsy
             ViewGroup.LayoutParams params = recyclerViewReview.getLayoutParams();
             params.height = RecyclerView.LayoutParams.WRAP_CONTENT;
             recyclerViewReview.setLayoutParams(params);
-
-        }
-    }
-
-    private class FavoriteBroadcastReceiver extends BroadcastReceiver {
-
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            Toast.makeText(context, intent.getStringExtra(INTENT_KEY), Toast.LENGTH_SHORT).show();
-            fab.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
 
         }
     }

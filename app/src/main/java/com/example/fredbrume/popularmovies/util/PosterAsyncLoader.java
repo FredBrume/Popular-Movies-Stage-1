@@ -1,4 +1,4 @@
-package com.example.fredbrume.popularmovies.util.loaders;
+package com.example.fredbrume.popularmovies.util;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -7,8 +7,6 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 
 import com.example.fredbrume.popularmovies.model.MoviePoster;
-import com.example.fredbrume.popularmovies.util.ForeignDB.MovieDBjsonUtils;
-import com.example.fredbrume.popularmovies.util.ForeignDB.NetworkUtils;
 import com.example.fredbrume.popularmovies.view.MainActivity;
 
 import java.net.URL;
@@ -56,6 +54,8 @@ public class PosterAsyncLoader implements LoaderManager.LoaderCallbacks<ArrayLis
             @Override
             protected void onStartLoading() {
                 super.onStartLoading();
+
+                posterTaskHandler.preExcecutePoster();
 
                 if (args == null) {
                     return;
@@ -113,5 +113,7 @@ public class PosterAsyncLoader implements LoaderManager.LoaderCallbacks<ArrayLis
     public interface PosterTaskHandler {
 
         void postExecutePoster(ArrayList<MoviePoster> poster);
+
+        void preExcecutePoster();
     }
 }

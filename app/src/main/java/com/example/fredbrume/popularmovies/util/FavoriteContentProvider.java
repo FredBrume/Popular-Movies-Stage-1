@@ -1,4 +1,4 @@
-package com.example.fredbrume.popularmovies.util.localDB;
+package com.example.fredbrume.popularmovies.util;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -11,7 +11,10 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import static com.example.fredbrume.popularmovies.util.localDB.FavoriteContract.FavoriteEntry.TABLE_NAME;
+import com.example.fredbrume.popularmovies.util.FavoriteContract;
+import com.example.fredbrume.popularmovies.util.FavoriteDBHelper;
+
+import static com.example.fredbrume.popularmovies.util.FavoriteContract.FavoriteEntry.TABLE_NAME;
 
 /**
  * Created by fredbrume on 8/15/17.
@@ -56,7 +59,8 @@ public class FavoriteContentProvider extends ContentProvider {
         switch (match) {
 
             case FAVORITES:
-                retCursor =  db.query(TABLE_NAME,
+
+                retCursor = db.query(TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -65,6 +69,7 @@ public class FavoriteContentProvider extends ContentProvider {
                         sortOrder);
                 break;
             // Default exception
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -109,7 +114,17 @@ public class FavoriteContentProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+
+        final SQLiteDatabase db = mFavoriteDbHelper.getWritableDatabase();
+
+        int favoriteDeleted;
+
+        favoriteDeleted = db.delete(TABLE_NAME, selection, selectionArgs);
+
+        if (favoriteDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return favoriteDeleted;
     }
 
     @Override
