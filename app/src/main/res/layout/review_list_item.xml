@@ -8,48 +8,43 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/layout_margin_small"
-    card_view:cardCornerRadius="4dp"
-    card_view:cardElevation="2dp"
-    card_view:cardMaxElevation="4dp"
-    android:background="@color/card_background"
+    card_view:cardCornerRadius="@dimen/card_corner_radius"
+    card_view:cardElevation="@dimen/card_elevation_min"
+    card_view:cardMaxElevation="@dimen/card_elevation_max"
+    android:background="@color/colorPrimaryDark"
     tools:ignore="ContentDescription">
 
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/card_background">
+        android:background="@color/colorPrimaryDark"
+        android:paddingBottom="@dimen/layout_margin_default">
 
         <TextView
             android:id="@+id/reviewer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Fred Brume"
-            android:padding="5dp"
+            tools:text="Fred Brume"
+            android:padding="@dimen/layout_margin_small"
             card_view:layout_constraintTop_toBottomOf="parent"
             card_view:layout_constraintLeft_toLeftOf="parent"
-            android:textColor="#a47e1d"
-            android:textSize="17sp" />
+            android:textColor="@color/review_title_text_color"
+            android:textSize="@dimen/body_view_text_size" />
 
 
         <TextView
             android:id="@+id/review"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="7.5"
-            android:padding="5dp"
+            tools:text="7.5"
+            android:padding="@dimen/layout_margin_small"
             android:maxLines="4"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="@dimen/layout_margin_small"
             card_view:layout_constraintTop_toBottomOf="@+id/reviewer"
             card_view:layout_constraintLeft_toLeftOf="parent"
-            android:textColor="@color/detail_title_colorl"
-            android:textSize="15sp" />
-
-        <android.support.v4.widget.Space
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            card_view:layout_constraintTop_toBottomOf="@+id/review"
-            card_view:layout_constraintLeft_toLeftOf="parent"/>
+            android:textColor="@color/white"
+            android:textSize="@dimen/body_view_text_size_small" />
 
     </android.support.constraint.ConstraintLayout>
 

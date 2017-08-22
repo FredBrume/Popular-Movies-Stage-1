@@ -31,7 +31,9 @@
             android:authorities="com.example.fredbrume.popularmovies"
             android:exported="false" />
 
-        <activity android:name=".view.FavoriteDetailActivity"></activity>
+        <activity android:name=".view.FavoriteDetailActivity"
+            android:parentActivityName=".view.MainActivity" />
+
     </application>
 
 </manifest>

@@ -53,7 +53,7 @@
                 android:layout_marginTop="@dimen/layout_margin_medium_small"
                 android:layout_toEndOf="@+id/favorite"
                 android:layout_toRightOf="@+id/favorite"
-                android:text="7.5"
+                tools:text="7.5"
                 android:textColor="@color/detail_title_colorl"
                 android:textSize="@dimen/body_view_text_size" />
 

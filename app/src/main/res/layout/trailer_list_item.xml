@@ -8,9 +8,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/layout_margin_small"
+    android:background="@color/card_background"
     card_view:cardElevation="2dp"
     card_view:cardMaxElevation="4dp"
-    android:background="@color/card_background"
     tools:ignore="ContentDescription">
 
 
@@ -26,15 +26,13 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:scaleType="fitXY"
-            android:scaleX="1.2" />
+            android:scaleType="fitXY" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_play"
             android:layout_gravity="center"
-            />
+            android:src="@mipmap/ic_play" />
 
     </FrameLayout>
 

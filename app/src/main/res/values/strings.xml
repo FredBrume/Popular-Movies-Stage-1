@@ -17,5 +17,6 @@
     <string name="favorite_value" translatable="false">favorite</string>
     <string name="added_to_favorite">Added to favorite</string>
     <string name="removed_from_favorite">Removed from favorite</string>
+    <string name="movie_extra_subject">Hey! Movie suggestion for you :)</string>
 
 </resources>

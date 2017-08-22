@@ -6,6 +6,7 @@
     <dimen name="layout_margin_medium_small">2dp</dimen>
     <dimen name="layout_margin_small">4dp</dimen>
     <dimen name="poster_width">130dp</dimen>
+    <dimen name="recyclerview_height">150dp</dimen>
     <dimen name="poster_width_land">200dp</dimen>
     <dimen name="poster_height">150dp</dimen>
     <dimen name="poster_height_land">250dp</dimen>
@@ -13,22 +14,27 @@
     <dimen name="layout_margin_bottom">8dp</dimen>
     <dimen name="star_size">23dp</dimen>
     <dimen name="star_size_land">35dp</dimen>
-
+    <dimen name="progress_bar_size">48dp</dimen>
+    <dimen name="card_corner_radius">4dp</dimen>
+    <dimen name="card_elevation_max">4dp</dimen>
+    <dimen name="card_elevation_min">2dp</dimen>
+    <dimen name="body_padding_default">10dp</dimen>
     <dimen name="appbar_height">250dp</dimen>
+    <dimen name="view_padding_size_large">20dp</dimen>
     <dimen name="appbar_width">@dimen/wrap_content</dimen>
 
     <dimen name="panel_paddingTop">10dp</dimen>
 
     <dimen name="bodyText_paddingLeft">9dp</dimen>
-
+    <dimen name="trailer_text_title_size">20sp</dimen>
+    <dimen name="title_text_size">25sp</dimen>
+    <dimen name="title_width">211dp</dimen>
     <dimen name="yeqr_view_text_size">23sp</dimen>
     <dimen name="text_size_small_small">3sp</dimen>
     <dimen name="vote_average_view_text_size">23sp</dimen>
     <dimen name="title_view_text_size">40sp</dimen>
     <dimen name="body_view_text_size">15sp</dimen>
-
-    <dimen name="view_padding_size_large">20dp</dimen>
-
+    <dimen name="body_view_text_size_small">13sp</dimen>
 
 
 </resources>
